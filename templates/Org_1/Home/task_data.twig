@@ -1,0 +1,113 @@
+<div class="pathwaytable">
+                        <table class="table pathwaytable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <input class="form-check-input" id="selAllChkBx" type="checkbox" value="" onclick="checkAll(this)">
+                                    </th>
+                                    <th scope="col"><i class="sorting-btn{% if sort_for== 'title'%} filtershow{% endif %}" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" onclick="sortThis(this, 'title')"> </i> {{"title" | trans}}
+                                    </th>
+                                    <th scope="col"> <i class="sorting-btn{% if sort_for== 'duration'%} filtershow{% endif %}" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" onclick="sortThis(this, 'duration')"> </i> {{"duration" | trans}}
+                                    </th>
+                                    <th scope="col"><i class="sorting-btn{% if sort_for== 'proficency_level'%} filtershow{% endif %}" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" onclick="sortThis(this, 'proficency_level')"> </i> Level
+                                    </th>
+                                    <th scope="col"><i class="sorting-btn{% if sort_for== 'availability'%} filtershow{% endif %}" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" onclick="sortThis(this, 'availability')"> </i> Availability
+                                    </th>
+                                    <th scope="col"><i class="sorting-btn{% if sort_for== 'pathway_type'%} filtershow{% endif %}" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" onclick="sortThis(this, 'pathway_type')"> </i> {{"pathwayType" | trans}}
+                                    </th>
+                                    <th scope="col"><i class="sorting-btn{% if sort_for== 'is_active'%} filtershow{% endif %}" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" onclick="sortThis(this, 'is_active')"> </i> {{"status" | trans}}</th>
+                                    <th scope="col">{{"actions" | trans}}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fbody">		
+                            {% if pathwayList|length > 0 %}							
+							{% for data in pathwayList %}	
+
+                                <tr>
+                                    <th scope="row" class="move-btnrow">
+                                        <input class="form-check-input" type="checkbox" value="" pathway-id="{{data.id}}" onclick="checkAll(this, 'yes')">
+                                        <!-- <a href="#" class=""> <img src="images/moveup-icon.svg" alt=""></a>
+                                        <a href="#" class=""><img src="images/movedown-icon.svg" alt=""></a> -->
+                                    </th>
+                                    <td>{{data.title}}</td>
+									
+                                    <td>{{data.duration |capitalize}}</td>
+                                    <td>{{level_map[data.proficency_level] |capitalize}}</td>
+                                    <td>{{avl_arr[data.availability]}}</td>
+                                    
+                                   {% if(data.pathway_type == 'completionRule') %}
+                                    <td>{{"completionRules" | trans}}</td>
+                                    {% else %}
+                                    <td>{{data.pathway_type |capitalize }}</td>
+                                    {%endif%} 
+
+                                    {% if(data.is_active == '1') %}
+                                    <td>{{"active" | trans}}</td>
+                                    {% elseif(data.is_active == '2') %}
+                                    <td>{{"inactive" | trans}}</td>
+                                    {%endif%} 
+                                    <!--<td><a href="{{path_for('pathwayDetails',{id: data.id, lang: lang})}}" class="table-circlebtn "> <img src="images/more-icon.svg" alt="">
+                                        </a></td> -->
+									 <td>
+                                        <div class="dropdown elipses-btn">
+                                            <a class="table-circlebtn dropdown-toggle" href="#" role="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                <img src="{{constant('HTTP_SERVER')}}images/more-icon.svg" alt="">
+                                            </a>
+
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" target="_blank" href="{{data.preview_link}}">{{"previewPathway" | trans}} </a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('editDraft',{id: data.mongo_id,form_type: "pwc-create-pathway", lang: lang})}}">{{"editDetails" | trans}} </a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('pathwayDetails',{id: data.id, lang: lang})}}">{{"editPathway" | trans}} </a></li>
+                                                <li><a class="dropdown-item" href="#">{{"managePeople" | trans}}</a></li>
+
+                                                {% if(data.is_active == '1') %}
+                                                <li class="inactive" id="{{data.id}}" data-active="inactive"><a class="dropdown-item" href="javascript:void(0)" onclick="changeStatus('{{data.id}}', 'inactive')">{{"makePathwayInactive" | trans}}</a></li>
+                                                {% elseif(data.is_active == '2') %}
+                                                <li class="inactive" id="{{data.id}}" data-active="active"><a class="dropdown-item" href="javascript:void(0)" onclick="changeStatus('{{data.id}}', 'active')">{{"makePathwayActive" | trans}}</a></li>
+                                                {%endif%}
+                                                <li class="copyPathway" id="{{data.id}}" ><a class="dropdown-item" href="javascript:void(0)" onclick="copyPathway('{{data.id}}', 'active')">{{"makeACopy" | trans}}</a></li>   
+
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr> 
+								
+                            {% endfor %}						
+                                {% else %}
+                                  <tr>
+								      <td colspan="10"> <center>No record found.</center></td>
+								  </tr>
+                                {% endif %}
+                            </tbody>
+							
+                        </table>
+					{% if total_pages > 0 %}
+    						
+							<nav aria-label="Page navigation example" class="pagination-sec">
+							  <ul class="pagination">
+							  {% if left_arrow=='yes' %}
+								<li class="page-item">
+								  <a class="page-link"  aria-label="Previous" onclick="loadPagingData({{prev_page}}, 'yes')" style="cursor:pointer;">
+									<i class="paginationarrow-left"></i>
+								  </a>
+								</li>
+								{% endif %}
+								{{li_html|raw}}
+								{% if right_arrow == 'yes' %}
+								<li class="page-item">
+								  <a class="page-link"  aria-label="Next" onclick="loadPagingData({{next_page}}, 'yes')" style="cursor:pointer;">
+									<i class="paginationarrow-right"></i>
+								  </a>
+								</li>
+								{% endif %}
+							  </ul>
+							</nav>
+
+					{% endif %}
+
+                        
+</div>
+ <span 
+id = "task_list_js" 
+ downloadPathwayUrl = "{{path_for('downloadPathway', {'lang':'en'})}}" downloadPathwayExcel = "{{path_for('downloadPathwayExcel', {'lang':'en'})}}" page_no="{{sel_page}}"></span>

@@ -1,0 +1,906 @@
+{% extends 'Org_1/Layout/app_home.twig' %}
+{% block content %}
+
+  <section class="">
+        <div class="pathwaytable-section">
+
+            <div >
+
+                <div class="d-flex justify-content-between custom-ul pathwayheader">
+
+                    <ul class="mb-0">
+                        <li>
+                            <h1 class="serifb-text">{{"pathways" | trans}}</h1>
+                        </li>
+                    </ul>
+
+                </div>
+
+
+                <ul class="nav nav-tabs customtab" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                            href="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+                            aria-selected="true" onclick="loadFilter()">{{"drafts" | trans}}</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                            href="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+                            aria-selected="false" onclick="loadFilter()">{{"published" | trans}}</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                        tabindex="0">
+
+
+                        <div class="d-flex justify-content-between custom-ul pathwaysubhead">
+
+                            <ul class="mb-0">
+                                <li>
+                                </li>
+                            </ul>
+                            <ul class="mb-0">
+                                <li><span  id="download_btn" class="secondarybtn-fade mgr-20" data-download="no" onclick="downloadPathwayExl(this)">{{"download" | trans}}</span></li>
+                                <li>
+                                    <a href="{{path_for('newFormRender',{lang: lang, formName:"pwc-create-pathway
+"})}}
+" class="primarybtn"> Add Pathway </a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+
+
+                        <div class="custom-ul filtersection">
+
+                            <ul class="mb-0 searchsection">
+                                <li class="pathwaysearch-row position-relative">
+                                    <input type="text" class="form-control" id="filterTextBox"
+                                        aria-describedby="search" placeholder="Search pathway" onkeyup="loadSearchFilter()">
+                                    <img class="pathwaysearchinput-icon" src="{{constant('HTTP_SERVER')}}images/search-icon.svg" alt="" id="searchBoxImgIcon" style="cursor:pointer;">
+                                </li>
+                                <li>
+
+                                </li>
+                            </ul>
+                            <ul class="mb-0 dropdown-row mt-32">
+
+                                <li>
+                                <label class="filter-bar">{{"filter" | trans}}</label>
+                                </li>
+
+                                <li>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            aria-expanded="false" id="durationBtn">
+                                            {{"duration" | trans}}
+                                        </button>
+                                     <ul class="dropdown-menu" id="duration">
+										<li class="dropdown-item">
+											<div class="form-check">
+												
+												<label class="form-check-label" for="check_duration_selectall" id="level_duration_selectall"><input type="checkbox" class="form-check-input" id="check_duration_selectall" onclick="selectAll('duration', this)"> {{"selectAll" | trans}}</label>
+											</div>
+										</li>
+										{% for key, d_value in duration %}
+                                            <li class="dropdown-item bdr-row"><div class="form-check">
+                                                    
+                                                    <label class="form-check-label" for="check_child_{{key}}" id="level_child_{{key}}"><input type="checkbox" class="form-check-input" id="check_child_{{key}}" onclick="selectAll('', this, 'check_duration_selectall')"> {{d_value}}</label>
+                                                </div>
+											</li>
+										{% endfor %}
+										<li class="dropdown-item bdr-row"></li>
+										<li><button type="button" class="cancelbtn d-inline" id="cancelbtn">Cancel</button>
+                                        <button type="submit" class="publishbtn d-inline" id="submit" onclick="addSelection()">{{"apply" | trans}}</button></li>
+                                        </ul>
+                                    </div>
+                                </li> 
+                                <li>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle level" type="button"
+                                             aria-expanded="false" id="levelBtn">
+                                            Level
+                                        </button>										
+                                        <ul class="dropdown-menu" id="level_sel_id">										
+										{% if level|length > 0 %}{% set nos=1 %}
+										<li class="dropdown-item">
+											<div class="form-check">												
+												<label class="form-check-label" for="check_avl_selectall" id="level_avl_selectall"><input type="checkbox" class="form-check-input" id="check_avl_selectall" onclick="selectAll('level_sel_id', this)"> {{"selectAll" | trans}}</label>
+											</div>
+										</li>
+						             	{% for data in level %}
+										<li class="dropdown-item bdr-row">
+                                                <div class="form-check">                                                    
+                                                    <label class="form-check-label" for="check_child_{{nos}}" id="level_child_{{nos}}"><input type="checkbox" class="form-check-input" id="check_child_{{nos}}"> {{data.value_of_data}}</label>
+                                                </div>
+                                            </li> {% set nos=nos+1 %}
+										{% endfor %}
+										<li class="dropdown-item bdr-row"></li>
+										<li><button type="button" class="cancelbtn d-inline" id="cancelbtn" onclick="$('#level_sel_id').removeClass('show')">Cancel</button>
+                                        <button type="submit" class="publishbtn d-inline" id="submit" onclick="addSelection()">{{"apply" | trans}}</button></li>
+										{% endif %}
+										
+                                        </ul>										
+                                    </div>
+                                </li>
+								<script>
+									function searchInList(obj){
+										 if(obj.value.length >= 2){
+											 var avl_length = '{{availability|length}}';
+										 	 $('#avail_menu').find('li').each(function(){
+												 
+												if($(this).index() > 1){ 													
+													$(this).hide();
+													
+												}
+											 });
+											 var txt = $.trim(obj.value).toLowerCase();
+											 //var s = "India";
+											$('#avail_menu').find('li').each(function(){
+												var str= $.trim($(this).text());
+												if (str.toLowerCase().indexOf(txt) >= 0){
+													 $(this).show();
+												}
+											});
+											//alert(txt);
+											 $('#avail_menu #avl_applybtn').show();
+
+											 
+
+										 }else{
+										 	$('#avail_menu').find('li').each(function(){
+												 
+												if($(this).index() > 1){ 													
+													$(this).show();
+													
+												}
+											 });
+										 }
+									
+									}
+									
+								</script>
+                                <li>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                             aria-expanded="false" id="avlBtn">
+                                            Availability
+                                        </button>
+                                        <ul class="dropdown-menu" id="avail_menu">
+
+                                        <li class="dropdown-item pos-r">
+                                        <input type="text" class="form-control-search" placeholder="Search" onkeyup="searchInList(this)">
+
+                                        <i class="filter-searchicon"></i>
+                                        </li>
+
+										<li class="dropdown-item">
+												<div class="form-check">                                                    
+                                                    <label class="form-check-label" for="avl_selectall" id="level_avl_selectall"><input type="checkbox" class="form-check-input" id="avl_selectall" onclick="selectAll('avail_menu', this)">{{"selectAll" | trans}}</label>
+                                                </div>
+										</li>
+
+										{% if availability|length > 0 %}							
+						             	{% for data in availability %}
+                                             
+											 <li class="dropdown-item bdr-row">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="avl_{{data.value_of_data}}" onclick="selectAll('', this, 'avl_selectall')">
+                                                    <label class="form-check-label" for="avl_{{data.value_of_data}}" id="level_avl_{{data.value_of_data}}">{{data.value_of_data}}</label>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+										<li class="filter-btnrow" id="avl_applybtn">
+                                        <button type="button" class="cancelbtn d-inline"  style="cursor:pointer" onclick="">{{"cancel" | trans}}</button>
+											<button type="submit" class="publishbtn d-inline"  onclick="addSelection()">{{"apply" | trans}}</button></li>
+										{% endif %}
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown" id="pathway_type_menu">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                             aria-expanded="false" id="ptypeBtn">
+                                            {{"pathwayType" | trans}}
+                                        </button>
+                                        <ul class="dropdown-menu" id="pathway_menu">
+										{% if pathway_type|length > 0 %}
+										<li class="dropdown-item">
+											<div class="form-check">
+												
+												<label class="form-check-label" for="check_pathway_selectall" id="level_pathway_selectall"><input type="checkbox" class="form-check-input" id="check_pathway_selectall" onclick="selectAll('pathway_menu', this)"> {{"selectAll" | trans}}</label>
+											</div>
+										</li>
+						             	{% for data in pathway_type %}                                            
+											<li class="dropdown-item bdr-row">
+                                                <div class="form-check">                                                    
+                                                    <label class="form-check-label" for="ptype_{{data.value_of_data}}" id="level_ptype_{{data.value_of_data|replace({' ': '-'})}}"><input type="checkbox" class="form-check-input" id="ptype_{{data.value_of_data|replace({' ':'-'})}}" onclick="selectAll('', this, 'check_pathway_selectall')">{{data.value_of_data}}</label>
+                                                </div>
+                                            </li>
+										{% endfor %}
+										<li class="dropdown-item bdr-row"></li>
+										<li><button type="button" class="cancelbtn d-inline"  style="cursor:pointer" onclick="">{{"cancel" | trans}}</button>
+											<button type="submit" class="publishbtn d-inline"  onclick="addSelection()">{{"apply" | trans}}</button></li>
+										{% endif %}
+                                        </ul>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            aria-expanded="false" id="statusBtn">
+                                            {{"status" | trans}}
+                                        </button>
+                                        <ul class="dropdown-menu" id="status_menu">
+										<li class="dropdown-item">
+											<div class="form-check">
+												
+												<label class="form-check-label" for="check_status_selectall" id="level_status_selectall"><input type="checkbox" class="form-check-input" id="check_status_selectall" onclick="selectAll('status_menu', this)"> {{"selectAll" | trans}}</label>
+											</div>
+										</li>
+										<li class="dropdown-item bdr-row" >
+                                                <div class="form-check">
+                                                    
+                                                    <label class="form-check-label" for="check_active" id="level_active"><input type="checkbox" class="form-check-input" id="check_active" onclick="selectAll('', this, 'check_status_selectall')"> {{"active" | trans}}</label>
+                                                </div>
+                                            </li>
+											<li class="dropdown-item bdr-row">
+                                                <div class="form-check">
+                                                    
+                                                    <label class="form-check-label" for="check_inactive" id="level_inactive"><input type="checkbox" class="form-check-input" id="check_inactive" onclick="selectAll('', this, 'check_status_selectall')"> {{"inactive" | trans}}</label>
+                                                </div>
+                                            </li>
+											<li class="dropdown-item bdr-row"></li>
+                                            <li><button type="button" class="cancelbtn d-inline"  style="cursor:pointer">{{"cancel" | trans}}</button>
+											<button type="submit" class="publishbtn d-inline"  onclick="addSelection()">{{"apply" | trans}}</button></li>                                                                                         
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+							<ul class="mb-0 mt-32" id="fSelSection" style="display:none">
+								<li>
+									<label class="filter-bar">Selected</label>
+                                </li> 
+                            </ul>
+						
+                        </div>
+
+						<!-- ############### -->
+						<div class="task-list-data">
+						   <div class="spinner-border" role="status" style="margin:50px 0px 0px 50%">
+							  <span class="visually-hidden">Loading...</span>
+							</div>
+						</div>
+						<!-- ################ -->
+
+                    </div>
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                        tabindex="0">
+
+
+<div class="pathwaytable">
+                        <table class="table pathwaytable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> {{"title" | trans}}
+                                    </th>
+                                    <th scope="col"> <img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> {{"duration" | trans}}
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Level
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Availability
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> {{"pathwayType" | trans}}
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> {{"status" | trans}}</th>
+                                    <th scope="col">{{"actions" | trans}}</th>
+                                </tr>
+                            </thead>                            
+                            <tbody id="fbody1">     
+                            {% if pathwayListPub|length > 0 %}                         
+                            {% for data in pathwayListPub %}   
+
+                                <tr>
+                                    <th scope="row" class="move-btnrow">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                        <!-- <a href="#" class=""> <img src="images/moveup-icon.svg" alt=""></a>
+                                        <a href="#" class=""><img src="images/movedown-icon.svg" alt=""></a> -->
+                                    </th>
+                                    <td>{{data.title}}</td>
+                                    
+                                    <td>{{data.duration |capitalize}}</td>
+                                    <td>{{data.proficency_level |capitalize}}</td>
+                                    <td>{{data.availability}}</td>
+                                    {% if(data.pathway_type == 'completionRule') %}
+                                    <td>{{"completionRules" | trans}}</td>
+                                    {% else %}
+                                    <td>{{data.pathway_type |capitalize }}</td>
+                                    {%endif%} 
+
+
+                                    {% if(data.is_active == '1') %}
+                                    <td>{{"active" | trans}}</td>
+                                    {% elseif(data.is_active == '2') %}
+                                    <td>{{"inactive" | trans}}</td>
+                                    {%endif%} 
+                                    <!--<td><a href="{{path_for('pathwayDetails',{id: data.id, lang: lang})}}" class="table-circlebtn "> <img src="images/more-icon.svg" alt="">
+                                        </a></td> -->
+                                     <td>
+                                        <div class="dropdown elipses-btn">
+                                            <a class="table-circlebtn dropdown-toggle" href="#" role="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                <img src="{{constant('HTTP_SERVER')}}images/more-icon.svg" alt="">
+                                            </a>
+
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#">{{"previewPathway" | trans}} </a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('editDraft',{id: data.mongo_id,form_type: "pwc-create-pathway", lang: lang})}}">{{"editDetails" | trans}} </a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('pathwayDetails',{id: data.id, lang: lang})}}">{{"editPathway" | trans}} </a></li>
+                                                <li><a class="dropdown-item" href="#">{{"managePeople" | trans}} </a></li>
+
+                                                {% if(data.is_active == '1') %}
+                                                <li class="inactive" id="{{data.id}}" data-active="inactive"><a class="dropdown-item" href="javascript:void(0)" onclick="changeStatus('{{data.id}}', 'inactive')">{{"makePathwayInactive" | trans}}</a></li>
+                                                {% elseif(data.is_active == '2') %}
+                                                <li class="inactive" id="{{data.id}}" data-active="active"><a class="dropdown-item" href="javascript:void(0)" onclick="changeStatus('{{data.id}}', 'active')">{{"makePathwayActive" | trans}}</a></li>
+                                                {%endif%}
+                                                <li class="copyPathway" id="{{data.id}}" ><a class="dropdown-item" href="javascript:void(0)" onclick="copyPathway('{{data.id}}', 'active')">{{"makeACopy" | trans}}</a></li>  
+
+
+
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr> 
+                                
+                            {% endfor %}                        
+                                {% else %}
+                                  <tr>
+                                      <td> <p>No record found.</p></td>
+                                  </tr>
+                                {% endif %}
+                            </tbody>
+                            
+                        </table>
+
+                    </div>
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+    </section>   
+
+
+ <div id="myModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <!-- <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Learning Object?</h1> -->
+            <button type="button" id="closelBtnLO" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+             <p>Are you sure you want to <span id="statusText"></span> this item?</p>
+        </div>
+
+        <div class="modal-footer">
+            <button id="cancelBtn" class="cancelbtn">{{"cancel" | trans}}</button>
+            <button id="confirmBtn" class="deletebtn">{{"yes" | trans}}</button>
+            
+          </div>
+      </div>
+    </div> 
+
+</div>
+    
+{% endblock %}
+
+{% block scriptBlock %}
+ <script>
+ function changeStatus(id, active){
+	//var id = $(li).attr('id');
+
+    //var active = $(li).attr('data-active');
+	if(active=='active'){
+		$('#statusText').text('activate');
+	}else{
+		$('#statusText').text('inactivate');
+	}
+    $("#myModal").show();
+      
+    $("#cancelBtn").click(function(){
+        $("#myModal").hide();
+        return false;
+    });
+
+      $("#confirmBtn").click(function(){
+         $.ajax({
+                url: '{{path_for("inactivatePathway")}}',
+                type: 'POST',
+                data: {'id': id,'active': active},
+                success: function success(response) {
+                  if (response.success) {
+                    location.reload();
+                    } else {
+                       
+                    }
+                }               
+              });
+        $("#myModal").hide();
+      });
+ 
+ }
+document.querySelectorAll(".inactive").forEach(function(li) {
+    li.addEventListener("click", function() {
+    var id = $(li).attr('id');
+
+    var active = $(li).attr('data-active');
+
+    $("#myModal").show();
+      
+    $("#cancelBtn").click(function(){
+        $("#myModal").hide();
+        return false;
+    });
+
+      $("#confirmBtn").click(function(){
+         $.ajax({
+                url: '{{path_for("inactivatePathway")}}',
+                type: 'POST',
+                data: {'id': id,'active': active},
+                success: function success(response) {
+                  if (response.success) {
+                    location.reload();
+                    } else {
+                       
+                    }
+                }               
+              });
+        $("#myModal").hide();
+      });
+  
+      
+  
+    });
+});
+
+
+ function copyPathway(id, active){
+    
+     // $("#confirmBtn").click(function(){
+         $.ajax({
+                url: '{{path_for("copyPathway")}}',
+                type: 'POST',
+                data: {'id': id},
+                success: function success(response) {
+                  if (response.success) {
+                    location.reload();
+                    } else {
+                       
+                    }
+                }               
+              });
+        //$("#myModal").hide();
+     // });
+ 
+ }
+
+  
+
+
+$(function() {
+  
+  $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+    localStorage.setItem('lastTab', $(this).attr('href'));
+  });
+  var lastTab = localStorage.getItem('lastTab');
+  
+  if (lastTab) {
+    $('[href="' + lastTab + '"]').tab('show');
+  }
+  
+});
+
+
+function loadPagingData(page_no, move=''){
+	$('.task-list-data').html('<div class="spinner-border" role="status" style="margin:50px 0px 0px 50%"><span class="visually-hidden">Loading...</span></div>');
+	$.ajax({
+	   url: 'task-list-data?page='+page_no+((move=='yes')?'&move=y':''),
+		type: 'POST',
+		data: {'level':'', 'is_published' : 0},                
+		success: function success(response) {
+			//console.log('non',response); return;
+			$('.task-list-data').html('');
+			$('.task-list-data').append(response);
+			
+		},
+		error: function error(err) {
+			if (err.status == 401) {
+				location.reload();
+			}
+		}
+	});
+
+}
+
+$(document).ready(function () {
+	$('ul#myTab  a#home-tab').addClass('active');
+	$('ul#myTab  a#profile-tab').removeClass('active');
+
+	let pub = sessionStorage.getItem("published");
+	if(pub == null){
+		sessionStorage.setItem("published", "0");
+		pub=0;
+	}else if(pub == 1){
+		$('ul#myTab  a#home-tab').removeClass('active');
+		$('ul#myTab  a#profile-tab').addClass('active');
+	}
+	//$(".lds-spinner").show();
+	
+	$.ajax({
+               url: 'task-list-data',
+                type: 'POST',
+                data: {'level':'', 'is_published' : pub},                
+                success: function success(response) {
+                    //console.log('non',response); return;
+                    $('.task-list-data').html('');
+                    $('.task-list-data').append(response);
+                    
+                },
+                error: function error(err) {
+                    if (err.status == 401) {
+                        location.reload();
+                    }
+                }
+            });
+});
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+$('#filterTextBox').keydown(function (event) {
+    let keyPressed = event.keyCode || event.which;
+    if (keyPressed === 13) {
+       	   loadSearchFilter();
+    }
+});
+
+$('#searchBoxImgIcon').click(loadSearchFilter);
+function loadSearchFilter(){
+	 loadFilter();
+
+}
+function selectAll(id='', obj='', selAll=''){
+	if(id != ''){
+		$('#'+id+' li input[type=checkbox]').each(function(){
+			   if(obj.checked){
+					$(this).prop('checked', true);
+			   }else{
+				 $(this).prop('checked', false);
+			   }
+	   
+	   });
+	}
+	if(!obj.checked && selAll != ''){
+		$('#'+selAll).prop('checked', false);
+	}
+	event.stopPropagation();
+}
+function addSelection(){
+	$('.filtersection ul').removeClass('show');
+	$('.filtersection button').removeClass('show');
+	$('#fSelSection li').remove();
+	$('#fSelSection').append('<li><label class="filter-bar">Selected</label></li>');
+	$('#fSelSection').show();
+	$('#duration li input[type=checkbox]:checked').each(function(){
+		var ids = $(this).attr('id');
+		idsArr = ids.split('_');
+		var leveText = $('#level_child_'+idsArr[2]).text();
+		leveText = $.trim(leveText);
+		if(leveText == ''){
+			leveText = $('#level_'+idsArr[1]+'_'+idsArr[2]).text();
+		}
+		//alert(leveText);
+		if($.trim(leveText) == 'Select all'){
+			leveText = 'All Duration';
+			$('#fSelSection').append('<li class="filterbar" id="duration_li_'+idsArr[2]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'duration\', \''+idsArr[2]+'\');loadFilter()"></button></li>');
+			return false;
+		}else{
+			$('#fSelSection').append('<li class="filterbar" id="duration_li_'+idsArr[2]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'duration\', \''+idsArr[2]+'\');loadFilter()"></button></li>');
+		}
+	});
+	$('#level_sel_id li input[type=checkbox]:checked').each(function(){
+		var ids = $(this).attr('id');
+		idsArr = ids.split('_');
+		var leveText = $('#level_child_'+idsArr[2]).text();
+		if(leveText == ''){
+			leveText = $('#level_'+idsArr[1]+'_'+idsArr[2]).text();
+		}
+		leveText = $.trim(leveText);
+		if(leveText == 'Select all'){
+			leveText = 'All Level';
+			$('#fSelSection').append('<li class="filterbar" id="level_li_'+idsArr[2]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'level\', \''+idsArr[2]+'\');loadFilter()"></button></li>');
+			return false;
+		}else{
+			$('#fSelSection').append('<li class="filterbar" id="level_li_'+idsArr[2]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'level\', '+idsArr[2]+');loadFilter()"></button></li>');
+		}
+	});
+	
+	$('#avail_menu li input[type=checkbox]:checked').each(function(){
+		var ids = $(this).attr('id');
+		idsArr = ids.split('_');
+		var leveText = $('#level_avl_'+idsArr[1]).text();
+		leveText = $.trim(leveText);
+		if(leveText=='Select all'){
+			leveText = 'All Countries';
+			$('#fSelSection').append('<li class="filterbar" id="avail_li_'+idsArr[1]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'avail\', \''+idsArr[1]+'\');loadFilter()"></button></li>');
+			return false;
+		}else{
+		$('#fSelSection').append('<li class="filterbar" id="avail_li_'+idsArr[1]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'avail\', \''+idsArr[1]+'\');loadFilter()"></button></li>');
+		}
+	});
+	$('#pathway_type_menu li input[type=checkbox]:checked').each(function(){
+		var ids = $(this).attr('id');
+		idsArr = ids.split('_');
+		var leveText = $('#level_ptype_'+idsArr[1]).text();
+		leveText = $.trim(leveText);
+		if(leveText == ''){
+			leveText = $('#level_'+idsArr[1]+'_'+idsArr[2]).text();
+		}
+		if($.trim(leveText) == 'Select all'){
+			leveText = 'All Pathway Type';
+			$('#fSelSection').append('<li class="filterbar" id="ptype_li_'+idsArr[1]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'ptype\', \''+idsArr[1]+'\');loadFilter()"></button></li>');
+			return false;
+		}else{
+
+			$('#fSelSection').append('<li class="filterbar" id="ptype_li_'+idsArr[1]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'ptype\', \''+idsArr[1]+'\');loadFilter()"></button></li>');
+		}
+	});
+	$('#status_menu li input[type=checkbox]:checked').each(function(){
+		var ids = $(this).attr('id');
+		idsArr = ids.split('_');
+		var leveText = $('#level_'+idsArr[1]).text();
+		leveText = $.trim(leveText);
+		if(leveText == ''){
+			leveText = $('#level_'+idsArr[1]+'_'+idsArr[2]).text();
+		}
+		if($.trim(leveText) == 'Select all'){
+			leveText = 'All Status';
+		   $('#fSelSection').append('<li class="filterbar" id="status_li_'+idsArr[1]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'status\', \''+idsArr[1]+'\');loadFilter()"></button></li>');
+		   return false;
+		}else{
+			$('#fSelSection').append('<li class="filterbar" id="status_li_'+idsArr[1]+'"><span>'+leveText+'</span><button type="button" class="closebtn" data-bs-dismiss="alert" onclick="removeElem(\'status\', \''+idsArr[1]+'\');loadFilter()"></button></li>');
+		}
+	});
+	$('#fSelSection').append('<li><label class="clearfilters" onclick="clearAllFil();loadFilter()" style="cursor:pointer">&nbsp;Clear all filters</label></li>');
+	loadFilter();
+	 //if($('#check_child_'+id).is(':checked')){
+	 	// var leveText = $('#level_child_'+id).text();
+		 //$('#fSelSection').append('<div class="alert alert-primary alert-dismissible fade show" style="width:120px;"><strong>'+leveText+'</strong><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+	 //}
+
+}
+function removeElem(wFil, id){
+	if(wFil == 'duration'){
+	  $('#duration_li_'+id).remove();
+	  
+	  $('#check_child_'+id).prop('checked', false);
+	  if(id == 'selectall'){
+	  	 $('#duration li input[type=checkbox]').each(function (){
+			$(this).prop('checked', false);
+		 
+		 });
+	  }
+	}
+	if(wFil == 'level'){
+	  $('#level_li_'+id).remove();
+	  
+	  $('#check_child_'+id).prop('checked', false);
+	  if(id == 'selectall'){
+	  	 $('#level_sel_id li input[type=checkbox]').each(function (){
+			$(this).prop('checked', false);
+		 
+		 });
+	  }
+	}
+	if(wFil == 'status'){
+	  $('#status_li_'+id).remove();	  
+	  $('#check_'+id).prop('checked', false);
+	  if(id == 'status'){
+	  	 $('#status_menu li input[type=checkbox]').each(function (){
+			$(this).prop('checked', false);
+		 
+		 });
+	  }
+	}
+	if(wFil == 'avail'){
+	  $('#avail_li_'+id).remove();	  
+	  $('#avl_'+id).prop('checked', false);
+	  if(id == 'selectall'){
+	  	 $('#avail_menu li input[type=checkbox]').each(function (){
+			$(this).prop('checked', false);
+		 
+		 });
+	  }
+	}
+	if(wFil == 'ptype'){
+	  $('#ptype_li_'+id).remove();	  
+	  $('#ptype_'+id).prop('checked', false);
+	   if(id == 'pathway'){
+	  	 $('#pathway_menu li input[type=checkbox]').each(function (){
+			$(this).prop('checked', false);
+		 
+		 });
+	  }
+	}
+}
+function clearAllFil(){
+	$('#filterTextBox').val('');
+	$('#fSelSection li').remove();
+	$('#duration li input[type=checkbox]').each(function(){
+				  $(this).prop('checked', false);
+	
+	});
+	$('#level_sel_id li input[type=checkbox]').each(function(){
+				  $(this).prop('checked', false);
+	
+	});
+	$('#status_menu li input[type=checkbox]').each(function(){
+				  $(this).prop('checked', false);
+	
+	});
+	$('#avail_menu li input[type=checkbox]').each(function(){
+				  $(this).prop('checked', false);
+	
+	});
+	$('#pathway_type_menu li input[type=checkbox]').each(function(){
+				  $(this).prop('checked', false);
+	
+	});
+	$('#fSelSection').append('<li><label class="filter-bar">Selected</label></li>');
+	$('#fSelSection').hide();
+}
+function loadFilter(obj='', sort=''){
+	var classes = $('ul#myTab  a#profile-tab').attr('class');
+	var clsArr = classes.split(' ');
+	var actCls = $.trim(clsArr[1]);
+	var	published = 0;
+	
+	
+	if(actCls=='active'){
+	   published = 1;
+	   sessionStorage.setItem("published", "1"); 
+	}else{
+	   sessionStorage.setItem("published", "0");
+	}
+	if(obj != ''){
+	//$('button.level').text(obj);
+	}else{
+	  obj = $.trim($('button.level').text());	
+	}
+	var flevel = '';
+	if(obj != 'Level'){
+		 flevel =  obj;
+	}
+	var searchText = '';
+	if($.trim($('#filterTextBox').val()) != ''){
+		 searchText = $.trim($('#filterTextBox').val());
+	}
+	let filter_data = [];
+	var cnt = 0;
+	$('#fSelSection').find('li').each(function(){
+		if($(this).text() != 'Selected'){
+			if($.trim($(this).text()) != 'Clear all filters'){
+				filter_data[cnt]= $(this).text();
+				cnt++;
+			}
+		}
+	});
+	if(filter_data == ''){
+		$('#fSelSection li').remove();
+	}
+   $('.task-list-data').html('<div class="spinner-border" role="status" style="margin:50px 0px 0px 50%"><span class="visually-hidden">Loading...</span></div>');
+   $.ajax({
+               url: 'task-list-data',
+                type: 'POST',
+                data: {'fil_data':filter_data, 'is_published' : published, 'searchText': searchText, 'sort': sort},                
+                success: function success(response) {
+                    //console.log('non',response); return;
+                    $('.task-list-data').html('');
+                    $('.task-list-data').append(response);
+                    
+                },
+                error: function error(err) {
+                    if (err.status == 401) {
+                        location.reload();
+                    }
+                }
+            });
+}
+
+
+ function sortThis(obj, str=''){
+ 	 var classArr = obj.className;
+	 var classes = classArr.split(' ');
+	 if(classes.length==1){
+	 	$(obj).addClass('filtershow');
+		 loadFilter('', str);
+
+	 }else{
+	 	$(obj).removeClass('filtershow');
+		loadFilter('', str+'-no')
+	 }
+ }
+ 
+ 
+
+function checkAll(obj='', child=''){
+	if(obj != '' && child == ''){
+		if(obj.checked){
+		   $('#fbody .form-check-input').prop('checked', true);
+		   
+		}else{
+			$('#fbody .form-check-input').prop('checked', false);
+			
+		}
+	}
+	if(child == 'yes'){
+		if(!obj.checked){
+		   $('#selAllChkBx').prop('checked', false);
+		   
+		}
+	}
+	var sel_count = 0;
+	$('.pathwaytable .form-check-input').each(function(){
+		if($(this).prop('checked')){
+			 sel_count++;
+		}
+	});
+	if(sel_count==0){
+		$('#download_btn').removeClass('secondarybtn');
+		$('#download_btn').addClass('secondarybtn-fade');
+		 $('#download_btn').attr('data-download', 'no');
+	}else{
+		 $('#download_btn').removeClass('secondarybtn-fade');
+		 $('#download_btn').addClass('secondarybtn');
+		 $('#download_btn').attr('data-download', 'yes');
+	
+	}
+
+}
+ </script>
+ <footer>
+        <div class="footersection">
+        <p>&copy;2023 PwC. All rights reserved. PwC refers to the US member firm of the PwC network or one of Its subsidiaries or affiliates.</p>
+
+        <ul>
+            <li><a href="#"> Help Center </a></li>
+            <li><a href="#"> Privacy Policy</a></li>
+            <li><a href="#"> Cookie Notice</a></li>
+            <li><a href="#"> Terms & Conditions</a></li>            
+        </ul>
+    </div>
+    </footer>
+
+<script src="{{constant('HTTP_SERVER')}}js/pagejs/task_list.js"></script>
+
+{% endblock %}

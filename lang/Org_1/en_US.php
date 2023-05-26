@@ -1,0 +1,1 @@
+<?php$json = (array)json_decode(file_get_contents(HTTP_SERVER."lang/en_US.json"));return $json;?>  

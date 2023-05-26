@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=11">
+        <link href="{{constant('HTTP_SERVER')}}line-awesome/line-awesome.min.css" rel="stylesheet">
+        <link href="{{constant('HTTP_SERVER')}}line-awesome/line-awesome.css" rel="stylesheet">
+        <link href="{{constant('HTTP_SERVER')}}css/bootstrap.min.css" rel="stylesheet" />
+        <link href="{{constant('HTTP_SERVER')}}css/org_1/style.css" rel="stylesheet">
+        <link href="{{constant('HTTP_SERVER')}}fonts/stylesheet.css" rel="stylesheet">
+        <link href="{{constant('HTTP_SERVER')}}css/org_1/media.css" rel="stylesheet">
+    </head>
+    <header>
+        <div class="header-top">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-md-5 col-sm-4">
+                        <a class="navbar-brand" href="{{path_for('home')}}" onclick="windowClickStream('click', 'homeicon')"><img src="{{constant('HTTP_SERVER')}}images/org_1/Logo.png" alt="" class="logo-itu"></a><span
+                            class="logo-title">Pathway</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                            aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                 
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="content unauthorized-div text-center">
+        <img src="{{constant('HTTP_SERVER')}}images/org_1/Forbidden-lock.png" alt="">
+        <h1>Access Forbidden</h1>
+        <h2>You don't have permission to access this Portal.</h2>  
+    </div>
+
+    <footer class="footer 0" role="contentinfo">
+        <div class="footer-top">
+        </div>
+        <!-- <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+    
+                    <div class="col-md-6">
+                        <div class="footer-menu">
+                            <ul>
+                                <li><a href="" target="_blank">Legal</a></li>
+                                <li><a href="" target="_blank">Privacy Policy Global</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="niitlogo text-right">
+                            <span><b>Powered by NIIT</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </footer>
+</html>

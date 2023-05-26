@@ -1,0 +1,70 @@
+{%extends 'Org_1/Layout/app.twig'%} 
+{% block content %}
+
+<div class="container-fluid mrg main-container">
+<div class="login-cont">
+
+    <div class="logo" style="display: none;">
+            <label class="logoheading mr-auto">{{'Pathway | trans'}}</label>
+    </div>
+
+    <div class="logo-row"></div>
+    <div class="hero_img">        
+        </div>        
+            <div class="form_bg">
+
+                <div class="dropdown navbar-right" style="display:none;">
+                    <a href="" class="dropdown-toggle header-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{lang}} <i class="la la-angle-down" style="margin-left: 5px;"></i></a>
+                    <!--ul class="dropdown-menu language"-->
+                    <ul>
+                        <li><a href="{{constant('HTTP_SERVER')}}en/{{routeName}}">{{'English'}}</a></li>
+                        <li><a href="{{constant('HTTP_SERVER')}}pt/{{routeName}}">{{'Portugese'}}</a></li>
+                    </ul>
+                    <!--/ul-->
+                </div>   
+                
+                <div class="lform">
+                    <form method="post" action="{{path_for('ProedgeLoginSubmit', {lang: lang})}}" id="login-form">
+                        {% if messages['error'] is defined %}
+                            <div class="col-sm-12 text-center">
+                                <div class="alert alert-danger">
+                                    {{ messages['error']['0'] }}
+                                </div>
+                            </div>
+                        {% elseif messages['success'] is defined %}
+                            <div class="col-sm-12 text-center">
+                                <div class="alert alert-success">
+                                    {{ messages['success']['0'] }}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="formrow form-group"><label class="control-label">{{"email" | trans}}</label>
+                            <span class="user"><img src="images/org_1/images/user.png" alt=""></span>
+                            <input type="text" name="username" id="username" class="required-entry validate-email" autocomplete="off">
+                        </div>
+                        <div class="formrow form-group mgt-20"><label class="control-label">{{"password" | trans}}</label>
+                            <span class="p_word"><img src="images/org_1/images/password.png" alt=""></span>
+                            <input type="password" class="required-entry validate-password" name="password" id="pass" value="" autocomplete="off">
+                        </div>
+                            <div class="button-section">
+                            
+                            <button type="submit" class="loginbtn" title="Sign in" name="send" id="send2">Log in</button>
+                            </div>
+
+                            <div class="text-center">
+                                <a href="" class="reset-btn">Reset Password</a>
+                            </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    
+</div>
+</div>
+
+{% endblock %}
+
+{% block scriptBlock %}
+    <script src="{{constant('HTTP_SERVER')}}js/pagejs/login.js?v={{ date().timestamp }}"></script>
+{% endblock %}

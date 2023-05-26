@@ -1,0 +1,97 @@
+{% extends 'Layout/app_home.twig' %}
+{% block content %}
+    <div class="connectmid-sec darkblue-bg">
+	<nav aria-label="breadcrumb" class="nav-bread breadcrump-click-stream">
+		<ol class="breadcrumb breadcrumbCustom">
+			<li class="breadcrumb-item ">
+				<a href="{{constant('HTTP_SERVER')}}{{lang}}">Home</a>
+				<i class="breadcrumbIconbtn" alt="breadcrumbIcon"/>
+			</li>
+
+                {% if (formKey != 'help' and formKey != 'home-banner') %}
+
+                <li class="breadcrumb-item">
+				<a href="{{constant('HTTP_SERVER')}}task-list">Requests</a>
+				<i class="breadcrumbIconbtn" alt="breadcrumbIcon"/>
+			</li>
+                {%endif%}              
+                
+            </ol>
+	</nav>
+</div>
+<div id="formio-id" class="request-custom-form"/>
+<script>
+	  var FORM_URL = '{{FORM_URL}}';
+      var form_id = '{{form_id}}';
+      var formKey = '{{formKey}}'; 
+      //var lang = '{{lang}}';
+	 // alert(lang);
+	        window.onload = function () {
+                loadForm(null, null);
+            };
+			 
+			function loadForm(form_data, selected_value) {
+                Formio.createForm(document.getElementById('formio-id'), FORM_URL, {
+                    noAlerts: false,
+                    hooks: {
+                        beforeSubmit: function (submission, next) {
+                            $('.btn').prop('disabled', true);
+                            var message = [];
+                            var error = false;
+                            setTimeout(function () {
+                                
+                                if (error) {
+                                    $('.btn').prop('disabled', false);
+                                    next(message);
+                                } else {
+                                    next();
+                                }
+                            }, 10);
+                        }
+                    }
+                }).then(function (form) {
+
+                form.on('change', function (changed) {
+                    $(".control-label--hidden").replaceWith('<label class="control-label control-label--hidden" style="display:none;">control-label</label>');
+                });
+                form.loading = false;
+                form.nosubmit = true;
+                form.submitMessage = '';
+    
+                form.on('submit', function (submission) {
+				form.submission.form = form.wizard !== undefined ? form.wizard._id : form._form._id;
+                    form.submission.owner = form.wizard !== undefined ? form.wizard.owner : form._form.owner;
+                    if (selected_value !== undefined && selected_value !== null) {
+                        form.submission.submission_id = selected_value;
+                    } else {
+                        form.submission.submission_id = '';
+                    } 
+					
+					
+					    $.ajax({
+								url: '{{path_for('addPathwayData',{lang: lang})}}',
+								type: 'POST',
+								data: {data: submission, formKey: formKey, FORM_URL: FORM_URL},
+								success: function success(response) {
+								  if (response.success) {
+									   window.location.href = '{{path_for('taskList',{lang: lang})}}'
+									} else {
+									   
+									}
+								}               
+							  });				
+									
+				});
+			  
+			});
+			}
+	
+				
+	  </script>
+
+{% endblock %}
+{% block scriptBlock %}
+    <script src="{{constant('HTTP_SERVER')}}js/pagejs/form.js?v={{ date().timestamp }}"/>
+
+{% endblock %}
+

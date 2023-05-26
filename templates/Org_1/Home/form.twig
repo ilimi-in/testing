@@ -1,0 +1,116 @@
+{% extends 'Org_1/Layout/app_home.twig' %}
+
+{% block content %}   
+   <!-- <div class="connectmid-sec darkblue-bg">
+	<nav aria-label="breadcrumb" class="nav-bread breadcrump-click-stream">
+		<ol class="breadcrumb breadcrumbCustom">
+			<li class="breadcrumb-item ">
+				<a href="{{constant('HTTP_SERVER')}}{{lang}}">Home</a>
+				<img class="breadcrumbIconbtn" alt="breadcrumbIcon"/>
+			</li>
+
+                {% if (formKey != 'help' and formKey != 'home-banner') %}
+
+                <li class="breadcrumb-item">
+				<a href="{{path_for('taskList', {lang: lang})}}">Pathway List (s)</a>
+				<img class="breadcrumbIconbtn" alt="breadcrumbIcon"/>
+			</li>
+                {%endif%}              
+                
+            </ol>
+	</nav>
+</div> -->
+
+<div class="formsection">
+		{% if (formKey == 'pwc-create-pathway') %}
+			<div>
+				<h1 class="headingbar">Create pathway</h1>
+				<span class="field-required">Required information</span>
+			</div>
+		{% elseif (formKey == 'pwc-section-details') %}
+			<div class="mb-32">
+				<h1 class="headingbar">Add section</h1>
+				<span class="field-required">Required information</span>
+			</div>
+		{% elseif (formKey == 'pwc-sub-section-details') %}
+			<div class="mb-32">
+				<h1 class="headingbar">Add subsection</h1>
+				<span class="field-required">Required information</span>
+			</div>
+		{% elseif (formKey == 'pwc-external-learning-object') %}
+			<div class="mb-32">
+				<h1 class="headingbar"> Add learning item</h1>
+			</div>
+		{%endif%}  
+      <div id="formio-id" class="request-custom-form"/></div>
+</div>
+
+<footer>
+    <div class="footersection">
+        <p>©2023 PwC. All rights reserved. PwC refers to the US member firm of the PwC network or one of Its subsidiaries or affiliates.</p>
+
+        <ul>
+            <li><a href="#"> Help Center </a></li>
+            <li><a href="#"> Privacy Policy</a></li>
+            <li><a href="#"> Cookie Notice</a></li>
+            <li><a href="#"> Terms & Conditions</a></li>            
+        </ul>
+    </div>
+</footer>
+
+<!-- add custom filter popup -->
+
+<div class="modal fade" id="customFilterModal" tabindex="-1" role="dialog" aria-labelledby="customFilterModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="customFilterLabel">Edit custom filter</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="customFormSubmit" type="post">
+	      <div class="modal-body">
+			  <div class="form-group">
+			    <label for="customFilterName">Custom filter name</label>
+			    <input type="text" class="form-control" name="customFilterName" id="customFilterName" placeholder="Example Priority">
+			  </div>
+			  <input type="hidden" name="customFilterId" id="customFilterId">
+			  <div id="customFilterValueShow">
+				  
+			  </div>
+			  <a id="addAdditionalValue">+ Add additional value</a>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="cancelbtn" data-bs-dismiss="modal">Close</button>
+	        <button type="submit" class="publishbtn">Save changes</button>
+	      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- add custom filter popup -->
+
+<span 
+id = "formData" 
+pathwayId = "{{pathwayId}}" 
+sectionId = "{{sectionId}}"
+mongoId = ""
+FORM_URL = "{{FORM_URL}}"
+form_id = "{{form_id}}"
+formKey = "{{formKey}}"
+type_id = "{{type_id}}"
+saveCustomFilterUrl = "{{path_for('saveCustomFilter')}}"
+getCustomFilterUrl = "{{path_for('getCustomFilter')}}"
+addPathwayDataUrl = "{{path_for('addPathwayData',{lang: lang})}}"
+addSectionDetailsUrl = "{{path_for('addSectionDetails', {lang: lang})}}"
+pathwayDetailsUrl = "{{path_for('pathwayDetails', {lang: lang, id:pathwayId})}}"
+addExternalLearningUrl = "{{path_for('addExternalLearning', {lang: lang})}}"
+taskListUrl = "{{path_for('taskList', {lang: lang})}}"
+></span>
+
+<script src="{{constant('HTTP_SERVER')}}js/pagejs/form.js?v={{ date().timestamp }}"></script>
+
+{% endblock %}
+

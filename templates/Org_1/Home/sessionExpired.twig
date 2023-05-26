@@ -1,0 +1,35 @@
+<html>
+<head>
+<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pathway</title>
+		<link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <link rel='stylesheet' href='{{constant('HTTP_SERVER')}}css/bootstrap4.5.min.css'>
+  <link href="{{constant('HTTP_SERVER')}}css/org_1/style.css?v={{ date().timestamp }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{constant('HTTP_SERVER')}}css/org_1/home_css/global.css">
+  <link href="{{constant('HTTP_SERVER')}}css/org_1/media.css?v={{ date().timestamp }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{constant('HTTP_SERVER')}}css/org_1/fonts.css">
+  <script src="{{constant('HTTP_SERVER')}}js/pagejs/logout.js?v={{ date().timestamp }}"></script>
+</head>
+  <body>
+      <header class="header-section">
+        <nav class="navbar navbar-expand-lg navbar-light content-section">
+            <label class="mr-auto">Pathway</label>
+        </nav>
+      </header>
+      <div class="bgimg">
+        <div class="sessionexpire-bar">
+          <label>Session timeout</label>
+            <p>Your session has expired. Please log in again to continue using the system.</p>
+            <div class="align-right">
+			{% if rurl!='' %}
+              <a class="button-primary" role="button" aria-description="Your session has expired. Please log in again to continue using the system." href="{{constant('BAC_LOGIN_URL')}}?rurl={{ rurl }}">Log in</a>
+			{% else %}
+				 <a class="button-primary" role="button" aria-description="Your session has expired. Please log in again to continue using the system." href="{{constant('BAC_LOGIN_URL')}}">Log in</a>
+			{% endif %}
+            </div>
+
+        </div>
+      </div>
+  </body>
+</html>

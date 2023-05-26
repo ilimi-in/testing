@@ -1,0 +1,66 @@
+ <table class="table pathwaytable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Title
+                                    </th>
+                                    <th scope="col"> <img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Duration
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Level
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Availability
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Pathway type
+                                    </th>
+                                    <th scope="col"><img class="sorting-btn" src="{{constant('HTTP_SERVER')}}images/sorting-icon.svg" alt=""> Status</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>							
+                            <tbody>		
+                            {% if pathwayList|length > 0 %}							
+							{% for data in pathwayList %}							
+                                <tr>
+                                    <th scope="row" class="move-btnrow">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                        <!-- <a href="#" class=""> <img src="images/moveup-icon.svg" alt=""></a>
+                                        <a href="#" class=""><img src="images/movedown-icon.svg" alt=""></a> -->
+                                    </th>
+                                    <td>{{data.title}}</td>
+									
+                                    <td>{{data.duration |capitalize}}</td>
+                                    <td>{{data.proficency_level |capitalize}}</td>
+                                    <td>{{data.availability}}</td>
+                                    <td>{{data.pathway_type |capitalize }}</td>
+                                    <td>Active</td>
+                                    <!--<td><a href="{{path_for('pathwayDetails',{id: data.id, lang: lang})}}" class="table-circlebtn "> <img src="images/more-icon.svg" alt="">
+                                        </a></td> -->
+									 <td>
+                                        <div class="dropdown elipses-btn">
+                                            <a class="table-circlebtn dropdown-toggle" href="#" role="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                <img src="{{constant('HTTP_SERVER')}}images/more-icon.svg" alt="">
+                                            </a>
+
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#">Preview pathway </a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('editDraft',{id: data.mongo_id,form_type: "pwc-create-pathway", lang: lang})}}">Edit details </a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('pathwayDetails',{id: data.id, lang: lang})}}">Edit pathway </a></li>
+                                                <li><a class="dropdown-item" href="#">Manage people </a></li>
+                                                <li><a class="dropdown-item" href="#">Make pathway inactive</a></li>
+                                                <li><a class="dropdown-item" href="{{path_for('copyPathway',{id: data.id, lang: lang})}}">Copy Pathway </a></li> 
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr> 
+								
+                            {% endfor %}						
+                                {% else %}
+                                  <tr>
+								      <td> <p>No record found.</p></td>
+								  </tr>
+                                {% endif %}
+                            </tbody>
+							
+                        </table>

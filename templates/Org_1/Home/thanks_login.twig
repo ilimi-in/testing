@@ -1,0 +1,33 @@
+<html>
+<head>
+<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pathway</title>
+		<link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+  <link href="{{constant('HTTP_SERVER')}}css/style.css" rel="stylesheet">
+  <link href="{{constant('HTTP_SERVER')}}css/fonts.css" rel="stylesheet">
+  <script src="{{constant('HTTP_SERVER')}}js/pagejs/logout.js?v={{ date().timestamp }}"></script>
+</head>
+  <body>
+      <header class="header-section">
+          <nav class="navbar navbar-expand-lg navbar-light content-section">
+              <label class="mr-auto">Pathway</label>
+          </nav>
+      </header>
+      <section class="">
+        <div class="container-xxl">
+            <div class="bgimg">
+              <div class="sessionexpire-bar">
+                <label>You are logged out</label>
+                  <p>Please log in again to continue using the system.</p>
+                  <div class="align-right">
+                  
+                      <a class="button-primary" role="button" aria-description="Please log in again to continue using the system." href="{{path_for('login', {lang: lang})}}">Log in</a>
+                  </div>
+
+              </div>
+            </div>
+        </div>
+    </section>
+  </body>
+</html>

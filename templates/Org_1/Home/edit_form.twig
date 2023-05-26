@@ -1,0 +1,119 @@
+{% extends 'Org_1/Layout/app_home.twig' %}
+{% block content %}
+    <div class="bannerrow bannerrow-sa bannerimg"> 
+        <div class="leftcontent">
+            <h3>{{title}}</h3>
+        </div>
+    </div>
+
+    <div class="loader-overlay form-preloader col-sm-12" id="home-loader-overlay">
+        <div id="preloader" >
+            <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>        
+        </div>
+    </div> 
+	
+    <!--<div class="faqsection">
+	    <h1> Edit learning object</h1>
+        <div id="formio-id"></div>
+    </div> -->
+
+	<div class="formsection">
+		{% if (formKey == 'pwc-create-pathway') %}
+			<div class="mb-32">
+				<h1 class="headingbar">Edit pathway details</h1>
+				<span class="field-required">Required information</span>
+			</div>
+		{% elseif (formKey == 'pwc-section-details') %}
+			<div class="mb-32">
+				<h1 class="headingbar">Edit section</h1>
+				<span class="field-required">Required information</span>
+			</div>
+		{% elseif (formKey == 'pwc-sub-section-details') %}
+			<div class="mb-32">
+				<h1 class="headingbar">Edit subsection</h1>
+				<span class="field-required">Required information</span>
+			</div>
+		{% elseif (formKey == 'pwc-external-learning-object') %}
+			<div class="mb-32">
+				<h1 class="headingbar"> Edit learning item (External)</h1>
+			</div>
+		{%endif%}  
+      <div id="formio-id" class="request-custom-form"/></div>
+</div>
+
+
+<span id="formData" 
+mongoId = "{{mongo_id}}" 
+getFormData = "{{path_for('getFormData')}}" 
+form_id = "{{form_id}}" 
+FORM_URL = "{{FORM_URL}}" 
+form_id = "{{form_id}}" 
+task_id = "{{task_id}}" 
+user_id = "{{user_id}}" 
+form_type = "{{form_type}}" 
+mode = "{{mode}}" 
+type = "{{type}}" 
+custom_filter_v = "{{custom_filter_v}}" 
+is_mandatory = "{{is_mandatory}}" 
+type_k = "{{type_k}}" 
+updatDraft = "{{path_for('updatDraft',{form_type: form_type, id:form_id, lang:lang})}}" 
+taskListUrl = "{{path_for('taskList', {lang: lang})}}" 
+pathwayDetailsUrl = "{{path_for('pathwayDetails', {lang:lang, id:pathwayId})}}" 
+getFormCustomFilterLoUrl = "{{path_for('getFormCustomFilterLo')}}" 
+HTTP_SERVER = "{{constant('HTTP_SERVER')}}" 
+getFormCustomFilterUrl = "{{path_for('getFormCustomFilter')}}" 
+saveFilterValueUrl = "{{path_for('saveFilterValue')}}" 
+saveCustomFilterUrl = "{{path_for('saveCustomFilter')}}" 
+getCustomFilterUrl = "{{path_for('getCustomFilter')}}" 
+deleteCustomFilterUrl = "{{path_for('deleteCustomFilter')}}"
+autoSaveText = "{{autoSaveText}}"
+></span>
+
+<footer>
+    <div class="footersection">
+        <p>©2023 PwC. All rights reserved. PwC refers to the US member firm of the PwC network or one of Its subsidiaries or affiliates.</p>
+
+        <ul>
+            <li><a href="#"> Help Center </a></li>
+            <li><a href="#"> Privacy Policy</a></li>
+            <li><a href="#"> Cookie Notice</a></li>
+            <li><a href="#"> Terms & Conditions</a></li>            
+        </ul>
+    </div>
+</footer>
+
+    <!-- add custom filter popup -->
+
+    <div class="modal fade" id="customFilterModal" tabindex="-1" role="dialog" aria-labelledby="customFilterModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="customFilterLabel">Edit custom filter</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form id="customFormSubmit" type="post">
+              <div class="modal-body">
+                  <div class="form-group">
+                    <label for="customFilterName">Custom filter name</label>
+                    <input type="text" class="form-control" name="customFilterName" id="customFilterName" placeholder="Example Priority">
+                  </div>
+                  <input type="hidden" name="customFilterId" id="customFilterId">
+                  <div id="customFilterValueShow">
+                      
+                  </div>
+                  <a id="addAdditionalValue">+ Add additional value</a>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="cancelbtn" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="publishbtn">Save changes</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- add custom filter popup -->
+    <script src="{{constant('HTTP_SERVER')}}js/pagejs/edit_form.js?v={{ date().timestamp }}"></script>
+{% endblock %}

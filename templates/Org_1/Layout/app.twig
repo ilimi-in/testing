@@ -1,0 +1,17 @@
+{#<!DOCTYPE html>#}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pathway</title>
+		<link rel="icon" type="image/x-icon" href="{{constant('HTTP_SERVER')}}images/favicon.ico">
+        <link rel='stylesheet' href="{{constant('HTTP_SERVER')}}css/bootstrap4.5.min.css">
+        <link rel="stylesheet" href="{{constant('HTTP_SERVER')}}css/login_style.css?v={{constant('PROEDGE_CSS_VERSION')}}">
+
+    </head>
+    <body class="login-page login-section">
+        {% block content %}{% endblock %}
+        
+        {% block scriptBlock %}{% endblock %}
+    </body>
+</html>

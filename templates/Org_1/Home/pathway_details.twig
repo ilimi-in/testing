@@ -1,0 +1,863 @@
+{% extends 'Org_1/Layout/app_home.twig' %}
+{% block content %}
+    <div class="row success-messages" id="section_msg">           
+            {% if messages['success'] is defined %}
+                <div class="col-sm-12 text-center">
+                    <div class="section_msg">
+                        <b>{{ messages['success']['0'] }}</b>
+                    </div>
+                </div>
+            {% endif %}
+    </div>
+
+    <section class="pathway-details-sec">
+        <div class="bannertop-row" style="background:url('../../upload/{{background}}')">
+            <div class="container-xxl">
+                <div class="pathwaybanner">
+                <div class="d-flex justify-content-between">
+                    <div class="backbtn-row wd80p">
+
+                        <div class="thumbnail-bgimg">
+                            <!-- <img src="..." class="rounded" alt="..."> -->
+                            <!-- <img src="{{getPathwayData.image}}"> -->
+                        </div>
+                        
+                        <div class="dis-inblock va-top headingsec">
+                            <div class="pathwayrow">
+                            <ul>
+                                <li>
+
+                                    <label class="pathwaygeneral-text">Pathway : {{getPathwayData.pathway_type_name}}</label>
+
+                                    
+                                </li>
+                                <li>PwC</li>
+                            </ul>
+                        </div>
+                            
+                            <h1 class="serifb-text">{{getPathwayData.title}}</h1>
+                            <div class='comment more'>{{getPathwayData.description | raw}}</div>
+
+                            <div class="pathway-subrow">
+                            <ul class="ps-0 pathway-subrow mb-4">
+                                <li>{{getPathwayData.duration}}</li>
+                                <li>{{getPathwayData.proficency_level}}</li>
+                            </ul>
+                            </div>
+
+
+                            <a href="{{path_for('secFormRender',{lang: lang, formName:'pwc-section-details
+', id: pathwayId})}}" class="secondary-btn d-inline mgl-o"> Add section </a>
+                            
+
+
+                            {% if(getPathwayData.is_active == '1') %}
+                            
+                                <a href="javascript:void(0)" target="_blank" class="primary-btn d-inline" id="showPreview" pathway-id="{{getPathwayData.id}}"> Preview </a>
+
+                            {% elseif(getPathwayData.is_active == '2') %}
+                               <button class="primary-btn d-inline noneactive" disabled="disabled">Preview</button>
+                            {%endif%} 
+                        </li>
+                {% if getPathwayData.pathway_type == '2' %}
+                {% if getSectionDetals|length > 0 %}
+                <div class="learnercompletes-row detailoption-row">
+                    <p class="font-bold">To complete this pathway, the learner must complete <span class="mandatory_label">*</span></p>
+                    <ul>
+                        <li><select class="form-select numberselcet min-complition" pathway-id="{{getPathwayData.id}}" mode="pathway" aria-label="Default select example">
+                            {% if getPathwayData.completion_min  == '' %}
+                                <option>0</option>
+                            {% endif %}
+                            {% for dataKey, data in getSectionDetals %}
+                            <option value="{{dataKey + 1}}" {% if dataKey + 1 == getPathwayData.completion_min %} selected {% endif %}>{{dataKey + 1}}</option>
+                            {% endfor %}
+                          </select></li>
+                        <li>sections out of {{getSectionDetals|length}}</li>
+                    </ul>
+                </div>
+                {% endif %}
+            {% elseif getPathwayData.pathway_type == '4' %}
+                {% if getSectionDetals|length > 0 %}
+                    <div class="mb-4 smm-row detailoption-row wid-full">
+                        <label for="">Learner starts below sequence from section <span class="mandatory_label">*</span></label>
+                        <select class="form-select add-sequence" pathway-id="{{getPathwayData.id}}" mode="pathway" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            {% for dataKey, data in getSectionDetals %}
+                                <option value="{{data.secid}}" {% if data.secid == getPathwayData.sequence_start %} selected {% endif  %}>{{data.title}} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            {% endif %} 
+                        </div>
+
+                    </div>
+
+                    <div class="">
+                        <div class="dis-inblock dropdown">
+                            <a href="#" class="circle-btn" role="button" data-bs-toggle="dropdown" aria-expanded="false"> 
+                                <img src="{{constant('HTTP_SERVER')}}images/setting-icon.svg" alt="Setting_icon">
+                             </a>
+
+                            <ul class="dropdown-menu" style="">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#backModal">Change pathway background</a></li>
+                                <li><a class="dropdown-item deletePathway"  pathway-id="{{getPathwayData.id}}" href="#">Delete Pathway</a></li>
+								
+                    
+                            </ul>
+
+                            <div id="myModal" class="modal">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Delete pathway</h1>
+                                    <button type="button" id="closelBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                <p>Are you sure you want to delete all the information you’ve added? You’ll not be able to undo it.</p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button id="cancelBtn" class="cancelbtn">Cancel</button>
+                                    <button id="confirmBtn" class="deletebtn">Yes Delete</button>
+                                    
+                                  </div>
+                              </div>
+                            </div> 
+
+                        </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+            </div>
+        </div>
+
+
+        
+    </section>
+
+    {% if getSectionDetals|length > 0 %}
+    <section class="grabg">
+        <div class="container-xxl">
+            <div class="accordion mg_t55 mg-l50" id="accordionPanelsStayOpenExample">
+
+                {% set sno = 0 %}
+                {% for dataKey, data in getSectionDetals %}
+                {% set sno = sno+1 %}
+                <div class="accordion-item">
+                    <div class="accordion-header" id="headingOne">
+                        <div class="accordion-button custom-acco-bar" id="validation_{{data.valid_id}}">
+
+                            <span class="sidebtn-bar noafter topsection-bar">
+                                <ul>
+                                    {% if(getSectionDetals[sno-2].id=='') %}
+                                    <li class="move-btn noneactive" data-current="{{data.id}}" data-node="{{getSectionDetals[sno-2].id}}" disabled='disabled'>
+                                    <img src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg" alt="up-arrow-disable">
+                                    </li>
+                                    {% else %}
+                                    <li class="upButton" data-current="{{data.id}}" data-node="{{getSectionDetals[sno-2].id}}">
+                                        <a href="javascript:void(0)" class="move-btn"><img src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg" alt="up-arrow"></a>
+                                    </li>
+                                    {%endif%}
+                                    
+                                        
+                                    {% if(getSectionDetals[sno].id=='') %}
+                                    <li class="move-btn noneactive" data-current="{{data.id}}"  data-node="{{getSectionDetals[sno].id}}" disabled='disabled'>
+                                       <img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg" alt="down-arrow-disable">
+                                    </li>
+                                    {% else %}
+                                    <li class="downButton" data-current="{{data.id}}"  data-node="{{getSectionDetals[sno].id}}" >
+                                        <a href="javascript:void(0)" class="move-btn"><img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg" alt="down-arrow"></a>
+                                    </li>
+                                    {%endif%}
+                                    
+                                        
+                                </ul>
+                            </span>
+
+
+                            <div class="sec-content">
+                                <div class="pathwayrow">
+                                    <ul>
+                                        <li>
+                                            <label class="pathwaygeneral-text">Section: {{data.type_name}}</label>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                
+                                <h2>{{data.title}}</h2>
+                                {{data.description | raw}}
+
+                                {% if getPathwayData.pathway_type == '4' %}
+                                    {% if data.secid == getPathwayData.sequence_start %}
+                                        <p>First in sequence, section unlocked for learner.</p>
+                                    {% else %}
+                                        <div class="mb-4 smm-row">
+                                            <label for="">Unlock this section when Learner completes <span class="mandatory_label">*</span></label>
+                                            <select class="form-select unlock-this" pathway-id="{{getPathwayData.id}}" section-id="{{data.secid}}" mode="section" aria-label="Default select example">
+                                                <option value="">Open this select menu</option>
+                                                {% for datasKey, datas in getSectionDetals %}
+                                                    {% if datas.secid != data.secid %}
+                                                        <option value="{{datas.secid}}" {% if datas.secid == data.sequence_num %} selected {% endif %}>{{datas.title}}</option>
+                                                    {% endif  %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}
+                                {% elseif getPathwayData.pathway_type ==  "1" %}
+                                    <div class="mb-4 smm-row">
+                                        <label for="">Make this section part of a branch? <span class="mandatory_label">*</span></label>
+                                        <select class="form-select add-branch" section-id="{{data.secid}}">
+                                            <option>Select branch</option>
+                                            {% for databKey, datab in getBranch %}
+                                            <option value="{{datab.id}}"  {% if datab.id == data.section_branch %} selected {% endif %}>{{datab.value_of_data}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% elseif getPathwayData.pathway_type ==  "3" %}
+                                    
+                                {% endif %}
+
+
+                                {% if data.type_id == 2 %}
+                                    {% if data.subSection|length > 0 %}
+                                        <div class="learnercompletes-row">
+                                            <p class="font-bold">To complete this section, the learner must complete <span class="mandatory_label">*</span></p>
+                                            <ul>
+                                                <li><select class="form-select numberselcet min-complition-session" pathway-id="{{getPathwayData.id}}" session-id="{{data.id}}" mode="session" aria-label="Default select example">
+                                                    {% if data.completion_min  == '' %}
+                                                        <option>0</option>
+                                                    {% endif %}
+                                                    {% for subSecDataKey, subSecData in data.subSection %}
+                                                    <option value="{{subSecDataKey + 1}}" {% if subSecDataKey + 1 == data.completion_min %} selected {% endif %}>{{subSecDataKey + 1}}</option>
+                                                    {% endfor %}
+                                                  </select></li>
+                                                <li>subsections/learning items out of {{data.subSection|length}}</li>
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                {% elseif data.type_id == 4 %}
+                                    {% if data.subSection|length > 0 %}
+                                        <div class="mb-4 smm-row">
+                                            <label for="">Learner starts below sequence from learning item <span class="mandatory_label">*</span></label>
+                                            <select class="form-select add-sequence-sec" pathway-id="{{getPathwayData.id}}" section-id="{{data.secid}}" mode="section" aria-label="Default select example">
+                                                <option selected>Open this select menu</option>
+                                                {% for subSecDataKey, subSecData in data.subSection %}
+                                                    <option value="{{subSecData.subsecid}}" {% if subSecData.subsecid == data.sequence_start %} selected {% endif  %}>{{subSecData.title}} </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+
+                                <div class="d-flex justify-content-between">
+
+                                    <ul class="mb-0">
+                                        <li>
+                                            <a href="{{path_for('subSecFormRender',{lang: lang, formName:'pwc-sub-section-details', id: pathwayId, sectionId:data.id })}}" class="secondary-btn">
+                                                Add subsection </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{path_for('subSecFormRender',{lang: lang, formName:'pwc-external-learning-object', id: pathwayId, sectionId:data.id })}}" class="secondary-btn">
+                                                Add learning object </a>
+                                        </li>
+                                    </ul>
+                                    <ul class="mb-0">
+                                        <li>
+                                            <a href="{{path_for('editDraft',{id: data.mongo_id,form_type: 'pwc-section-details', lang: lang})}}" class="circle-btn"> <img src="{{constant('HTTP_SERVER')}}images/edit-icon.svg" alt="edit-section"> </a>
+                                        </li>
+                                       
+                                        <li class="delete_subsec" id="{{data.id}}" data-title="section">
+                                           <a href="javascript:void(0)" class="circle-btn"> <img src="{{constant('HTTP_SERVER')}}images/delete-icon.svg" alt="delete-section"></a>
+                                        </li>
+
+                                         <div id="myModalSection" class="modal">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                  <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel"><p id="sechead"></p></h1>
+                                                    <button type="button" id="closelBtnsection" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                <p id="secmsg"></p>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button id="cancelBtnsetion" class="cancelbtn">Cancel</button>
+                                                    <button id="confirmBtnSection" class="deletebtn">Yes Delete</button>
+                                                    
+                                                  </div>
+                                              </div>
+                                            </div> 
+
+                                        </div>
+                                        
+                                        {% if (data.subSection|length > 0 or data.learningObject|length > 0) %}
+                                        <li>
+                                            <a class="circle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{sno}}" aria-expanded="true" aria-controls="collapseOne{{sno}}">
+                                                <img class="uparrow-icon" src="{{constant('HTTP_SERVER')}}images/uparrow-icon.svg" alt="collapse-icon">
+                                                <img class="collapse-icon" src="{{constant('HTTP_SERVER')}}images/collapse-icon.svg" alt="collapse-icon">
+                                            </a>
+                                        </li>
+                                        {%endif%}
+
+                                    </ul>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    {% if (data.subSection|length > 0 or data.learningObject|length > 0) %}
+                    <div id="collapseOne{{sno}}" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+
+                            <div class="accordion" id="accordionPanelsStayOpenExampleI">
+                                {% if data.subSection|length > 0 %}
+                                {% set snoSubSec = 0 %}
+                                {% for subSecDataKey, subSecData in data.subSection %}
+                                {% set snoSubSec = snoSubSec+1 %}
+                                <div class="accordion-item">
+                                    <div class="accordion-header" id="subsection-heading-I">
+                                        <div class="accordion-button custom-acco-bar"  id="validation_{{subSecData.valid_id}}">
+
+                                            {% if subSecData.category == '1' %}
+                                                <!-- section -->
+
+
+                                                <div class="sidebtn-bar">
+                                                    <ul>
+                                                        {% if(data.subSection[snoSubSec-2].id=='') %}
+                                                         <li class="move-btn noneactive" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec-2].id}}" disabled='disabled'>
+                                                            <img src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg"
+                                                                    alt="up-arrow-disable">
+                                                        </li>
+                                                        {% else %}
+                                                         <li class="downButton" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec-2].id}}">
+                                                            <a href="javascript:void(0)" class="move-btn"><img src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg"
+                                                                    alt="up-arrow"></a>
+                                                        </li>
+                                                        {%endif%}
+                                                       
+
+                                                       {% if(data.subSection[snoSubSec].id=='') %}
+                                                       <li class="move-btn noneactive" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec].id}}" disabled='disabled'>
+                                                            <img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg"
+                                                                    alt="down-arrow-disable">
+                                                        </li>
+                                                       {% else %}
+                                                       <li class="downButton" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec].id}}">
+                                                            <a href="javascript:void(0)" class="move-btn"><img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg"
+                                                                    alt="down-arrow"></a>
+                                                        </li>
+                                                       {%endif%}
+                                                        
+                                                    </ul>
+                                                </div>
+
+                                                <div class="pathwayrow">
+                                                    <ul>
+                                                        <li>
+                                                            <label class="pathwaygeneral-text">Subsection: {{subSecData.type_name}}</label>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                
+                                                <h2>{{subSecData.title}}</h2>
+                                                {{subSecData.description | raw}}
+
+
+                                                {% if data.type_id == 4 %}
+                                                    {% if subSecData.subsecid == data.sequence_start %}
+                                                        <p>First in sequence, learning item unlocked for learner.</p>
+                                                    {% else %}
+                                                        <div class="mb-4 smm-row">
+                                                            <label for="">Unlock this subsection when Learner completes <span class="mandatory_label">*</span></label>
+                                                            <select class="form-select unlock-this" pathway-id="{{getPathwayData.id}}" section-id="{{subSecData.subsecid}}" mode="section" aria-label="Default select example">
+                                                                <option value="">Open this select menu</option>
+                                                                {% for subSecDataKeys, subSecDatas in data.subSection %}
+                                                                    {% if subSecDatas.subsecid != subSecData.subsecid %}
+                                                                        <option value="{{subSecDatas.subsecid}}" {% if subSecDatas.subsecid == subSecData.sequence_num %} selected {% endif %}>{{subSecDatas.title}}</option>
+                                                                    {% endif  %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    {% endif %}
+                                                {% elseif data.type_id == 3 %}
+                                                    
+                                                {% endif %}
+
+
+                                                {% if subSecData.type_id == 2 %}
+                                                    {% if subSecData.learningObject|length > 0 %}
+                                                        <div class="learnercompletes-row">
+                                                            <p class="font-bold">To complete this subsection, the learner must complete <span class="mandatory_label">*</span></p>
+                                                            <ul>
+                                                                <li><select class="form-select numberselcet min-complition-session" pathway-id="{{getPathwayData.id}}" session-id="{{subSecData.id}}" mode="session" aria-label="Default select example">
+                                                                    {% if subSecData.completion_min == '' %}
+                                                                        <option>0</option>
+                                                                    {% endif %}
+                                                                    {% for learningObjDataKey, learningObjData in subSecData.learningObject %}
+                                                                    <option value="{{learningObjDataKey + 1}}" {% if learningObjDataKey + 1 == subSecData.completion_min %} selected {% endif %}>{{learningObjDataKey + 1}}</option>
+                                                                    {% endfor %}
+                                                                  </select></li>
+                                                                <li>learning items out of {{subSecData.learningObject|length}}</li>
+                                                            </ul>
+                                                        </div>
+                                                    {% endif %}
+                                                {% elseif subSecData.type_id == 4 %}
+                                                    {% if subSecData.learningObject|length > 0 %}
+                                                        <div class="mb-4 smm-row">
+                                                            <label for="">Learner starts below sequence from learning item <span class="mandatory_label">*</span></label>
+                                                            <select class="form-select add-sequence-sec" pathway-id="{{getPathwayData.id}}" section-id="{{subSecData.subsecid}}" mode="section" aria-label="Default select example">
+                                                                <option selected>Open this select menu</option>
+                                                                {% for learningObjDataKey, learningObjData in subSecData.learningObject %}
+                                                                    <option value="{{learningObjData.lo_id}}" {% if learningObjData.lo_id == subSecData.sequence_start %} selected {% endif  %}>{{learningObjData.title}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                <div class="d-flex justify-content-between">
+                                                    <ul class="mb-0">
+                                                        <li>
+                                                            <a href="{{path_for('subSecFormRender',{lang: lang, formName:'pwc-external-learning-object', id: pathwayId, sectionId:subSecData.id })}}" class="secondary-btn">
+                                                                Add learning object  </a>
+                                                        </li>
+                                                    </ul>
+                                                   
+                                                    <ul class="mb-0">
+                                                
+                                                            <li>
+                                                                <a href="{{path_for('editDraft',{id: subSecData.mongo_id,form_type: 'pwc-sub-section-details', lang: lang})}}" class="circle-btn"> <img src="{{constant('HTTP_SERVER')}}images/edit-icon.svg"
+                                                                        alt="edit-icon"> </a>
+                                                            </li>
+                                                        
+                                                       
+                                                        <li class="delete_subsec" id="{{subSecData.id}}" data-title="subsection">
+                                                           <a href="javascript:void(0)" class="circle-btn"> <img src="{{constant('HTTP_SERVER')}}images/delete-icon.svg" alt="delete-icon"> </a>
+                                                        </li>
+                                                        {% if subSecData.learningObject|length > 0 %}
+                                                        <li>
+                                                            <a class="circle-btn"  type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#subsection{{snoSubSec}}"
+                                                            aria-expanded="true" aria-controls="subsection{{snoSubSec}}"> 
+                                                            <img class="uparrow-icon" src="{{constant('HTTP_SERVER')}}images/uparrow-icon.svg" alt="uparrow-icon">
+                                                            <img class="collapse-icon" src="{{constant('HTTP_SERVER')}}images/collapse-icon.svg" alt="collapse-icon">
+                                                                 </a>
+                                                        </li>
+                                                        {%endif%}
+                                                    </ul>
+                                                </div>
+
+                                            {% elseif subSecData.category == '2'  %}
+                                                <div class="sidebtn-bar">
+                                                    <ul>
+                                                        {% if(data.subSection[snoSubSec-2].id=='') %}
+                                                         <li class="move-btn noneactive" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec-2].id}}" disabled='disabled'>
+                                                            <img src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg"
+                                                                    alt="uparrow-icon-disabled">
+                                                        </li>
+                                                        {% else %}
+                                                         <li class="downButton" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec-2].id}}">
+                                                            <a href="javascript:void(0)" class="move-btn"><img src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg"
+                                                                    alt="uparrow-icon"></a>
+                                                        </li>
+                                                        {%endif%}
+                                                       
+
+                                                       {% if(data.subSection[snoSubSec].id=='') %}
+                                                       <li class="move-btn noneactive" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec].id}}" disabled='disabled'>
+                                                            <img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg"
+                                                                    alt="down-arrow-disable">
+                                                        </li>
+                                                       {% else %}
+                                                       <li class="downButton" data-current="{{subSecData.id}}" data-node="{{data.subSection[snoSubSec].id}}">
+                                                            <a href="javascript:void(0)" class="move-btn"><img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg"
+                                                                    alt="down-arrow"></a>
+                                                        </li>
+                                                       {%endif%}
+                                                        
+                                                    </ul>
+                                                </div>
+
+                                                <div class="pathwayrow">
+                                                    <ul>
+                                                        {% if subSecData.lo_type != '' %}
+                                                            <li><b>{{subSecData.lo_type}}</b></li>
+                                                        {% endif %}
+                                                        {% if subSecData.provider != '' %}
+                                                            <li>{{subSecData.provider}}</li>
+                                                        {% endif %}
+
+                                                        {% if subSecData.level != '' %}
+                                                            <li>{{subSecData.level}}</li>
+                                                        {% endif %}
+
+                                                        {% if subSecData.duration != '' %}
+                                                            <li>{{subSecData.duration}}</li>
+                                                        {% endif %}
+
+                                                        {% if subSecData.is_active == 1 %}
+                                                            <li>Active</li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                                <div class="lo_thumbnails"><img src="{{subSecData.image}}"></div>
+                                                <h2>{{subSecData.title}}</h2>
+                                                {{subSecData.description | raw}}
+
+                                                    {% if data.type_id == 4 %}
+                                                        {% if subSecData.subsecid == data.sequence_start %}
+                                                            <p>First in sequence, learning item unlocked for learner.</p>
+                                                        {% else %}
+                                                            <div class="mb-4 smm-row">
+                                                                <label for="">Unlock this learning item when Learner completes <span class="mandatory_label">*</span></label>
+                                                                <select class="form-select unlock-this" pathway-id="{{getPathwayData.id}}" section-id="{{subSecData.subsecid}}" mode="section" aria-label="Default select example">
+                                                                    <option value="">Open this select menu</option>
+                                                                    {% for subSecDataKeys, subSecDatas in data.subSection %}
+                                                                        {% if subSecDatas.subsecid != subSecData.subsecid %}
+                                                                            <option value="{{subSecDatas.subsecid}}" {% if subSecDatas.subsecid == subSecData.sequence_num %} selected {% endif %}>{{subSecDatas.title}}</option>
+                                                                        {% endif  %}
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% elseif data.type_id == 3 %}
+                                                        
+                                                    {% endif %}
+
+                                                    <div class="pathway-subrow">
+                                                        <ul class="ps-0 pathway-subrow mb-4">
+                                                            {% if subSecData.is_mandatory == 1 %}
+                                                                <li>Mandatory</li>
+                                                            {% endif %}
+
+                                                            {% if subSecData.customFilter|length > 0 %}
+                                                                {% for cusFilKey, cusFilData in subSecData.customFilter %}
+                                                                    <li>{{cusFilData.filter_key}}: {{cusFilData.filter_value}}</li>
+                                                                {% endfor %}
+                                                            {% endif %}
+
+                                                        </ul>
+                                                    </div>
+
+
+                                                <div class="d-flex justify-content-between">
+
+                                                    <ul class="mb-0">
+
+                                                    </ul>
+                                                    <ul class="mb-0">
+                                                        <li>
+                                                            <a href="{{path_for('editDraft',{id: subSecData.mongo_id,form_type: 'pwc-external-learning-object', lang: lang})}}" class="circle-btn"> <img
+                                                                    src="{{constant('HTTP_SERVER')}}images/edit-icon.svg" alt="edit-icon"> </a>
+                                                        </li>
+                                                        <li  class="delete_lo" id="{{subSecData.id}}" >
+                                                             <a href="javascript:void(0)" class="circle-btn"><img src="{{constant('HTTP_SERVER')}}images/delete-icon.svg" alt="delete-icon"> </a>
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
+                                            {% else %}
+                                                <!-- nothing -->
+                                            {% endif  %}
+
+                                        </div>
+                                    </div>
+                                    {% if subSecData.learningObject|length > 0 %}
+                                    <div id="subsection{{snoSubSec}}" class="accordion-collapse collapse show"
+                                        aria-labelledby="subsection-heading-I" data-bs-parent="#accordionExampleI">
+                                        <div class="accordion-body losection">
+
+                                            {% set snoSubSecLO = 0 %}
+                                            {% for learningObjDataKey, learningObjData in subSecData.learningObject %}
+                                            {% set snoSubSecLO = snoSubSecLO+1 %}
+                                            <div class="custom-acco-bar lo-row position-relative" id="validation_{{learningObjData.valid_id}}">
+
+
+                                                <span class="sidebtn-bar">
+                                                    <ul>
+                                                        {% if(subSecData.learningObject[snoSubSecLO-2].id=='') %}
+                                                        <li class="move-btn noneactive" data-current="{{learningObjData.id}}" data-node="{{subSecData.learningObject[snoSubSecLO-2].id}}">
+                                                           <img
+                                                                    src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg" alt="up-arrow-disable">
+                                                        </li>
+                                                        {% else %}
+                                                        <li class="upButtonLO" data-current="{{learningObjData.id}}" data-node="{{subSecData.learningObject[snoSubSecLO-2].id}}">
+                                                            <a href="javascript:void(0)" class="move-btn"><img
+                                                                    src="{{constant('HTTP_SERVER')}}images/moveup-icon.svg" alt="uparrow-icon"></a>
+                                                        </li>
+                                                        {%endif%}
+                                                        
+
+                                                        {% if(subSecData.learningObject[snoSubSecLO].id=='') %}
+                                                        <li class="move-btn noneactive" data-current="{{learningObjData.id}}" data-node="{{subSecData.learningObject[snoSubSecLO].id}}">
+                                                        <img src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg" alt="down-arrow-disable">
+                                                        </li>
+                                                        {% else %}
+                                                        <li class="downButtonLO" data-current="{{learningObjData.id}}" data-node="{{subSecData.learningObject[snoSubSecLO].id}}">
+                                                            <a href="javascript:void(0)" class="move-btn"><img
+                                                                    src="{{constant('HTTP_SERVER')}}images/movedown-icon.svg" alt="down-arrow"></a>
+                                                        </li>
+                                                        {%endif%}
+                                                        
+                                                    </ul>
+                                                </span>
+
+
+                                                <div class="pathwayrow">
+                                                    <ul>
+                                                        {% if learningObjData.lo_type != '' %}
+                                                            <li><b>{{learningObjData.lo_type}}</b></li>
+                                                        {% endif %}
+
+                                                        {% if learningObjData.provider != '' %}
+                                                            <li>{{learningObjData.provider}}</li>
+                                                        {% endif %}
+
+                                                        {% if learningObjData.level != '' %}
+                                                            <li>{{learningObjData.level}}</li>
+                                                        {% endif %}
+
+                                                        {% if learningObjData.duration != '' %}
+                                                            <li>{{learningObjData.duration}}</li>
+                                                        {% endif %}
+
+                                                        {% if learningObjData.is_active == 1 %}
+                                                            <li>Active</li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                                <div class="lo_thumbnails"><img src="{{learningObjData.image}}"></div>
+                                                <h2>{{learningObjData.title}}</h2>
+                                                {{learningObjData.description | raw}}
+
+                                                {% if subSecData.type_id == 4 %}
+                                                    {% if learningObjData.lo_id == subSecData.sequence_start %}
+                                                        <p>First in sequence, learning item unlocked for learner.</p>
+                                                    {% else %}
+                                                        <div class="mb-4 smm-row">
+                                                            <label for="">Unlock this learning item when Learner completes <span class="mandatory_label">*</span></label>
+                                                            <select class="form-select unlock-this" pathway-id="{{getPathwayData.id}}" section-id="{{subSecData.subsecid}}" learning-object="{{learningObjData.lo_id}}" mode="lo" aria-label="Default select example">
+                                                                <option value="">Open this select menu</option>
+                                                                {% for learningObjDataKeys, learningObjDatas in subSecData.learningObject %}
+                                                                    {% if learningObjDatas.lo_id != learningObjData.lo_id %}
+                                                                        <option value="{{learningObjDatas.lo_id}}" {% if learningObjDatas.lo_id == learningObjData.sequence_num %} selected {% endif %}>{{learningObjDatas.title}}</option>
+                                                                    {% endif  %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    {% endif %}
+                                                {% elseif subSecData.type_id == 3 %}
+                                                    
+                                                {% endif %}
+
+                                                    <div class="pathway-subrow">
+                                                        <ul class="ps-0 pathway-subrow mb-4">
+                                                            {% if learningObjData.is_mandatory == 1 %}
+                                                                <li>Mandatory</li>
+                                                            {% endif %}
+                                                            {% if learningObjData.customFilter|length > 0 %}
+                                                                {% for cusFilKey, cusFilData in learningObjData.customFilter %}
+                                                                    <li>{{cusFilData.filter_key}}: {{cusFilData.filter_value}}</li>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </ul>
+                                                    </div>
+
+
+
+                                                <div class="d-flex justify-content-between">
+
+                                                    <ul class="mb-0">
+
+                                                    </ul>
+                                                    <ul class="mb-0">
+                                                        <li>
+                                                            <a href="{{path_for('editDraft',{id: learningObjData.mongo_id,form_type: 'pwc-external-learning-object', lang: lang})}}" class="circle-btn"> <img
+                                                                    src="{{constant('HTTP_SERVER')}}images/edit-icon.svg" alt="edit-icon"> </a>
+                                                        </li>
+                                                        <li class="delete_lo" id="{{learningObjData.id}}" >
+                                                            <a href="javascript:void(0)" class="circle-btn"> <img src="{{constant('HTTP_SERVER')}}images/delete-icon.svg" alt="delete-icon"> </a>
+                                                        </li>
+
+                                                        
+
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                            {% endfor %}
+
+                                            
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+
+            </div>
+        </div>
+    </section>
+
+    {% else %}
+    
+        <div class="container-xxl">
+        <div class="nodata-sec">
+            <img class="no-data-content_img" src="{{constant('HTTP_SERVER')}}images/no-data-img.svg" alt="no-data-content_img">
+            <h2 class="nodata-bar">It’s empty here. Go ahead, add a section.</h2>
+        </div>
+        </div>
+    
+    {% endif %}
+
+
+        <div class="backtop-bar">
+        <i class="bt-icon"></i>
+        <span>Back to top</span>
+        </div>
+
+        <div id="msg1" class="alert alert-danger" role="alert" style="display: none">
+       
+        </div>
+
+
+<div class="sticky-footer">
+        <div class="container-xxl">
+        <div class="d-flex justify-content-between">
+
+            <ul class="mb-0">
+                <!-- <li  class="back-btn">
+                    <a href="{{path_for('taskList', {lang: lang})}}" class="back-btn">Back</a>
+                </li> -->
+            </ul>
+            <ul class="mb-0">
+                {% if(getPathwayData.is_published == '1') %}
+                <li class="mgr-30">
+                    Last published: {{lastUpdate}} ET
+                </li>
+                {% else %}
+                <li class="mgr-30">
+                    Last saved: {{lastUpdate}} ET
+                </li>
+                {%endif%} 
+                
+                <li  class="back-btn">
+                    <a href="{{path_for('taskList', {lang: lang})}}" class="back-btn">Back</a>
+                </li>
+               
+                <li  class="publish-btn" >
+                    {% if(getPathwayData.is_active == '1') %}
+                    <a href="javascript:void(0)"  class="publish-btn publish-pathway" pathway-id="{{getPathwayData.id}}"> Publish </a>
+                    {% elseif(getPathwayData.is_active == '2') %}
+                    <button class="publish-btn noneactive" disabled="disabled">Publish</button>
+                    {%endif%} 
+                </li>
+            </ul>
+        </div>
+        </div>
+    </div>
+<!-- Modal -->
+<div class="modal fade" id="backModal" tabindex="-1" aria-labelledby="backModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="exampleModalLabel"><u>Change Background Image</u></h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="backUpldFrm" enctype="multipart/form-data">
+			<input name="backfile" type="file" id="backfile" />
+			<input type="button" class="btn btn-primary" id="uploadBack" value="Upload" />
+		</form>
+		<br /><br />
+      </div>
+      <!--<div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+ <!-- Modal End -->
+
+ <div id="myModalLO" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Learning Object?</h1>
+            <button type="button" id="closelBtnLO" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+        <p>Are you sure you want to delete the learning item (LO) you’ve added? You’ll not be able to undo it.</p>
+        </div>
+
+        <div class="modal-footer">
+            <button id="cancelBtnLO" class="cancelbtn">Cancel</button>
+            <button id="confirmBtnLO" class="deletebtn">Yes Delete</button>
+            
+          </div>
+      </div>
+    </div> 
+
+</div>
+    <footer>
+        <div class="footersection">
+        <p>©2023 PwC. All rights reserved. PwC refers to the US member firm of the PwC network or one of Its subsidiaries or affiliates.</p>
+
+        <ul>
+            <li><a href="#"> Help Center </a></li>
+            <li><a href="#"> Privacy Policy</a></li>
+            <li><a href="#"> Cookie Notice</a></li>
+            <li><a href="#"> Terms & Conditions</a></li>            
+        </ul>
+    </div>
+    </footer>
+    <!--script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script-->
+<!--/body>
+
+</html-->
+
+<span 
+id = "pathwayDetails"
+pathwayId = "{{pathwayId}}"
+changeSectionPositionUrl = "{{path_for('changeSectionPosition')}}"
+changeLOPositionUrl = "{{path_for('changeLOPosition')}}"
+deleteLO = "{{path_for('deleteLO')}}"
+deleteSubSectionUrl = "{{path_for('deleteSubSection')}}"
+publishPathwayUrl = "{{path_for('publishPathway')}}"
+saveMinimumComplitionUrl = "{{path_for("saveMinimumComplition")}}"
+saveSequenceStartUrl = "{{path_for('saveSequenceStart')}}"
+sequenceUnlockUrl = "{{path_for('sequenceUnlock')}}"
+addBranchUrl = "{{path_for('addBranch')}}"
+deletePathwayUrl = "{{path_for('deletePathway')}}"
+taskListUrl = "{{path_for('taskList', {lang: lang})}}"
+uploadBackGroungImageUrl = "{{path_for('uploadBackGroungImage', {'id': pathwayId})}}"
+>
+</span>
+
+<script src="{{constant('HTTP_SERVER')}}js/pagejs/pathway_details.js?v={{ date().timestamp }}"></script>
+
+{% endblock %}

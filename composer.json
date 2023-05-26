@@ -1,0 +1,41 @@
+{
+    "name": "semhoun/slim-skeleton-mvc",
+    "description": "Simple Slim Framework 3 skeleton with Twig, Monolog, Doctrine in Sqlite, JWT authentication.",
+    "license": "MIT",
+    "type": "project",
+    "keywords": ["slim-framework", "slim3", "skeleton", "mvc", "sqlite", "twig", "monolog", "doctrine", "jwt authentication"],
+    "authors": [
+        {
+            "name": "Nathanael Semhoun",
+            "email": "nathanael@semhoun.net",
+            "homepage": "http://www.semhoun.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\Controller\\": "src/Controller",
+            "App\\Models\\": "src/Models",
+            "App\\Entity\\": "src/Entity",
+			"App\\Lib\\": "src/Lib",
+			"App\\Command\\" : "src/Command"
+        }
+    },
+    "require": {
+        "slim/slim": "^3.12.4",
+        "slim/twig-view": "^2.4",
+        "slim/flash": "^0.4.0",
+        "monolog/monolog": "^1.24",
+        "doctrine/orm": "^2.9",
+        "tuupola/slim-jwt-auth": "^3.7",
+        "ramsey/uuid": "^3.8",
+        "dflydev/fig-cookies": "^1.0",
+		"symfony/console": "^4.2",
+        "symfony/cache": "^6.2",
+        "doctrine/annotations": "^2.0",
+        "illuminate/database": "^10.10",
+        "bryanjhv/slim-session": "^3.7",
+        "mongodb/mongodb": "^1.12",
+        "symfony/translation": "^5.2",
+        "symfony/twig-bridge": "^5.3"
+    }
+}
